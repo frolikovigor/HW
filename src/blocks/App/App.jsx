@@ -3,6 +3,6 @@ import {render} from 'react-dom';
 import Page from 'blocks/Page/Page.jsx';
 
 render (
-    <Page/>,
+    <Page />,
     document.getElementById('content')
 )
