@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Comments from 'blocks/Comment/Comments.jsx';
+
 /**
  * Article
  * @param {Object}      article
@@ -12,8 +14,9 @@ class Article extends React.Component {
     }
 
     state = {
-        isShow: false,
-        showArticle: ::this.showArticle
+        isShow: true,
+        showArticle: ::this.showArticle,
+        index: 0
     }
 
     showArticle () {
@@ -31,20 +34,32 @@ class Article extends React.Component {
     }
 
     componentDidMount () {
-        window.addEventListener('scroll', this.state.showArticle);
+        // window.addEventListener('scroll', this.state.showArticle);
     }
 
     componentWillUnmount () {
-        window.removeEventListener('scroll', this.state.showArticle);
+        // window.removeEventListener('scroll', this.state.showArticle);
     }
 
-    renderComment (comment) {
-        return (
-            <div key={comment.id} className='comment'>
-                <div>{`${comment.name.first} ${comment.name.last}`}</div>
-                {comment.text}
-            </div>
-        );
+    addComment(articleId) {
+        var {article} = this.props;
+        const fname = document.getElementById(`addcomment_${articleId}`).getElementsByTagName('input')[0].value;
+        const value = document.getElementById(`addcomment_${articleId}`).getElementsByTagName('textarea')[0].value;
+
+        if (value) {
+            article.comments.push({
+                "id": "217b9ab5-c24d-46bc-9ef8-87e1b406005b-" + this.state.index,
+                "name": {
+                    "first": fname,
+                    "last": ""
+                },
+                "title": "",
+                "text": value
+            });
+            this.setState({
+                index: this.state.index + 1
+            });
+        }
     }
 
     render () {
@@ -52,21 +67,18 @@ class Article extends React.Component {
             {isShow} = this.state;
 
         return (
-            <div ref='article' className='article' style={{opacity: isShow ? 1 : 0}}>
+            <div ref='article' className='article' style={{opacity: isShow ? 1 : 0}} title={`Comments: ${article.comments.length}`}>
                 <h2>{article.title}</h2>
                 <div>
                     {article.text}
                 </div>
-                <div className='comments'>
-                    <div className='comments-bar' onClick={toggleComments}>
-                        {article.comments && `Comments: ${article.comments.length}`}
-                    </div>
-                    <div className='comments-list' style={{display: showComments ? 'block' : 'none'}}>
-                        {article.comments && article.comments.map(
-                            comment => this.renderComment(comment)
-                        )}
-                    </div>
-                </div>
+                <Comments
+                    article={article}
+                    toggleComments={toggleComments}
+                    showComments={showComments}
+                    addComment={this.addComment}
+                    this_={this}
+                />
             </div>
         );
     }
